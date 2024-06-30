@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% block title %}Chat with AI School Helper{% endblock %}
+    
+{% block content %}
+    <h1>Chat with AI School Helper</h1>
+    <div class="chat-box" id="chat-box"></div>
+    <textarea class="chat-input" id="chat-input" placeholder="Type your message here..."></textarea>
+    <button id="send-button" class = "btn btn-primary btn-lg">Send</button>
+
+    <script>
+        $(document).ready(function() {
+            $('#send-button').on('click', function() {
+                var message = $('#chat-input').val();
+                if (message.trim() !== '') {
+                    $('#chat-box').append('<p><strong>You:</strong> ' + message + '</p>');
+                    $.ajax({
+                        type: 'POST',
+                        url: '',
+                        data: {
+                            message: message,
+                            csrfmiddlewaretoken: '{{ csrf_token }}'
+                        },
+                        success: function(response) {
+                            if (response.message) {
+                                $('#chat-box').append('<p><strong>Assistant:</strong> ' + response.message + '</p>');
+                            } else if (response.error) {
+                                $('#chat-box').append('<p><strong>Error:</strong> ' + response.error + '</p>');
+                            }
+                            $('#chat-input').val('');
+                            $('#chat-box').scrollTop($('#chat-box')[0].scrollHeight);
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+{% endblock %}

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+{% extends 'base.html' %}
+{% block title %} Matching with Others {% endblock %}
+{% block content %}
+    <h1>Find people similar to you</h1>
+    <button class ="btn btn-primary btn-lg" id="get-recommendations">Get Recommendations</button>
+    <div class="mt-4" id="recommendations" >
+        
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            $('#get-recommendations').click(function() {
+                $.ajax({
+                    url: '{% url "match" %}',
+                    type: 'POST',
+                    data: {
+                        'csrfmiddlewaretoken': '{{ csrf_token }}'
+                    },
+                    success: function(response) {
+                        if (response.message) {
+                            $('#recommendations').html('<p><strong>Recommendations:</strong><br>' + response.message + '</p>');
+                        } else if (response.error) {
+                            $('#recommendations').html('<p><strong>Error:</strong> ' + response.error + '</p>');
+                        }
+                    },
+                    error: function(xhr, errmsg, err) {
+                        $('#recommendations').html('<p><strong>Error:</strong> ' + errmsg + '</p>');
+                    }
+                });
+            });
+        });
+    </script>
+{% endblock %}
